@@ -6,7 +6,6 @@ namespace bwgl {
     // Check here for more information: 
     // https://www.glfw.org/docs/3.3/group__keys.html
     // https://www.glfw.org/docs/latest/group__buttons.html
-
     enum class KeyCode : int {
         // Mouse
         Mouse1 = GLFW_MOUSE_BUTTON_1,

@@ -12,6 +12,7 @@ namespace bwgl {
 		Borderless = 1
 	};
 
+	// Stores windows position and size.
 	struct WindowState {
 		// Postion
 		int xpos = 0;
@@ -22,6 +23,7 @@ namespace bwgl {
 		int height = 512;
 	};
 
+	// Singleton class for wrapping up GLFW window logic, OpenGL loading and Input management.
 	class Window {
 	public:
 		static Window& get() {
@@ -29,7 +31,8 @@ namespace bwgl {
 			return instance;
 		}
 
-		// This function can be called only once, for Window is a singleton.
+		// Initializes all members of Window, loads OpenGL and sets up Input.
+		// This function can be called only once, for Window is meant as a singleton.
 		[[nodiscard]]
 		bool create(int width, int height, const char* title, bool vsync = false) {
 			if (m_window) return false;
@@ -38,6 +41,8 @@ namespace bwgl {
 				std::cerr << "Error bwgl::Window::create() | Failed to initialize GLFW\n";
 				return false;
 			}
+
+			m_glfwInitialized = true;
 
 			// Set OpenGL version 4.4
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -58,6 +63,8 @@ namespace bwgl {
 				std::cerr << "Error bwgl::Window::create() | Failed to create an OpenGL 4.4 GLFW window\n";
 				
 				glfwTerminate();
+				m_glfwInitialized = false;
+
 				return false;
 			}
 
@@ -105,7 +112,7 @@ namespace bwgl {
 			return true;
 		}
 
-		// Polls key presses and window events.
+		// Polls window events.
 		void pollEvents() {
 			if (!m_window) return;
 			glfwPollEvents();
@@ -130,8 +137,7 @@ namespace bwgl {
 			return glfwWindowShouldClose(m_window);
 		}
 
-		// Changes fullscreen according to the current FullscreenMode.
-		// The FullScreenMode can only be updated when the window is in windowed mode.
+		// Sets fullscreen according to the current FullscreenMode.
 		void setFullscreen(bool value) {
 			if (!m_window || value == m_fullscreen) return;
 
@@ -152,7 +158,7 @@ namespace bwgl {
 			return m_fullscreen;
 		}
 
-		// The FullScreenMode can only be updated when the window is in windowed mode.
+		// The FullscreenMode can only be updated when the window is in windowed mode.
 		// Returns true when the FullscreenMode changes successfully.  
 		bool setFullscreenMode(FullscreenMode mode) {
 			if (m_fullscreen || m_changingFullscreen) {
@@ -168,7 +174,8 @@ namespace bwgl {
 			return m_fullscreenMode;
 		}
 
-		// Even when window is not resizable, it can still be set to fullscreen.
+		// Even when the resizable setting is set to false, the window can still go fullscreen.
+		// Fails when the GLFWwindow object has not been created.
 		void setResizable(bool value) {
 			if (!m_window) return;
 			glfwSetWindowAttrib(m_window, GLFW_RESIZABLE, value);
@@ -179,7 +186,8 @@ namespace bwgl {
 			return m_resizable;
 		}
 
-		// Vsync manipulation.
+		// Changes the vsync settings.
+		// Fails when the GLFWwindow object has not been created.
 		void setVsync(bool value) {
 			if (!m_window || value == m_vsync) return;
 
@@ -191,15 +199,15 @@ namespace bwgl {
 			return m_vsync;
 		}
 
-		// Change the window states.
-		// Does not work when window is in fullscreen.
+		// Changes the window state.
+		// Fails when window is in fullscreen, or the GLFWwindow object has not been created.
 		void setSize(int width, int height) {
 			if (!m_window || m_fullscreen) return;
 			glfwSetWindowSize(m_window, width, height);
 		}
 
-		// Change the window states.
-		// Does not work when window is in fullscreen.
+		// Changes the window state.
+		// Fails when window is in fullscreen, or the GLFWwindow object has not been created.
 		void setPos(int xpos, int ypos) {
 			if (!m_window || m_fullscreen) return;
 			glfwSetWindowPos(m_window, xpos, ypos);
@@ -209,15 +217,23 @@ namespace bwgl {
 			return m_currentState;
 		}
 
+		// Copy and move constructors
+		Window(const Window&) = delete;
+		Window(Window&&) = delete;
+	private:
 		~Window() {
 			if (m_window) {
 				glfwDestroyWindow(m_window);
 				m_window = nullptr;
 			}
 
-			glfwTerminate();
+			if (m_glfwInitialized) {
+				glfwTerminate();
+				m_glfwInitialized = false;
+			}
 		}
-	private:
+		Window() = default;
+
 		// Window settings
 		WindowState m_currentState;
 		WindowState m_preFullscreenState;
@@ -229,7 +245,8 @@ namespace bwgl {
 		
 		bool m_vsync = false;
 
-		// GLFW object
+		// GLFW handling
+		bool m_glfwInitialized = false;
 		GLFWwindow* m_window = nullptr;
 
 		// Update window settings.
@@ -420,7 +437,5 @@ namespace bwgl {
 				}
 			);
 		}
-
-		Window() = default;
 	};
 }
