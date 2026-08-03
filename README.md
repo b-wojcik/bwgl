@@ -1,1 +1,1 @@
-Header only c++ glfw+glad wrapper liblary.
+Header only c++ glfw-glad wrapper liblary.
