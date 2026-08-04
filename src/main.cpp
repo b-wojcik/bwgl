@@ -7,6 +7,7 @@ int main() {
 
 	bwgl::window.setFullscreenMode(bwgl::FullscreenMode::Borderless);
 	bwgl::window.setResizable(false);
+	bwgl::window.setVsync(true);
 
 	while (!bwgl::window.shouldClose()) {	
 		bwgl::window.pollEvents();

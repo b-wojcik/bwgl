@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+
+#define GLFW_INCLUDE_NONE
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
@@ -23,7 +25,7 @@ namespace bwgl {
 		int height = 512;
 	};
 
-	// Singleton class for wrapping up GLFW window logic, OpenGL loading and Input management.
+	// Singleton class for wrapping up GLFW logic and OpenGL loading, bwgl::Input management.
 	class Window {
 	public:
 		static Window& get() {
@@ -38,7 +40,7 @@ namespace bwgl {
 			if (m_window) return false;
 
 			if (!glfwInit()) {
-				std::cerr << "Error bwgl::Window::create() | Failed to initialize GLFW\n";
+				std::cerr << "ERROR bwgl::Window::create() | Failed to initialize GLFW\n";
 				return false;
 			}
 
@@ -60,7 +62,7 @@ namespace bwgl {
 			);
 
 			if (!m_window) {
-				std::cerr << "Error bwgl::Window::create() | Failed to create an OpenGL 4.4 GLFW window\n";
+				std::cerr << "ERROR bwgl::Window::create() | Failed to create an OpenGL 4.4 GLFW window\n";
 				
 				glfwTerminate();
 				m_glfwInitialized = false;
@@ -85,7 +87,7 @@ namespace bwgl {
 
 			// Load OpenGL 4.4
 			if (!gladLoadGL(glfwGetProcAddress)) {
-				std::cerr << "Error bwgl::Window::create() | Failed to initialize GLAD\n";
+				std::cerr << "ERROR bwgl::Window::create() | Failed to initialize GLAD\n";
 				
 				glfwDestroyWindow(m_window);
 				m_window = nullptr;

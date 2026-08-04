@@ -3,10 +3,11 @@
 #include <array>
 
 namespace bwgl {
-    // Check here for more information: 
-    // https://www.glfw.org/docs/3.3/group__keys.html
-    // https://www.glfw.org/docs/latest/group__buttons.html
+    // Transforms GLFW key constants into an enum.
     enum class KeyCode : int {
+        // https://www.glfw.org/docs/3.3/group__keys.html
+        // https://www.glfw.org/docs/latest/group__buttons.html
+
         // Mouse
         Mouse1 = GLFW_MOUSE_BUTTON_1,
         Mouse2 = GLFW_MOUSE_BUTTON_2,
@@ -166,6 +167,7 @@ namespace bwgl {
         Hold = 2
     };
 
+    // Singleton class for handling GLFW keyboard and mouse callbacks.
     class Input {
     public:
         static Input& get() {
@@ -202,30 +204,29 @@ namespace bwgl {
             return m_cursorY;
         }
 
-        // !!! Should be called only by bwgl::Window.
+        // !!! Should be called only by bwgl::Window !!!
         void setWindowDimensions(float width, float height) {
             m_windowWidth = width;
             m_windowHeight = height;
         }
 
-        // !!! Should be called only by bwgl::Window.
+        // !!! Should be called only by bwgl::Window !!!
         void setKeyState(int key, KeyState state) {
             keys[key] = state;
         }
 
-        // !!! Should be called only by bwgl::Window.
+        // !!! Should be called only by bwgl::Window !!!
         void setMouseButtonState(int button, KeyState state) {
             keys[button] = state;
         }
 
-        // !!! Should be called only by bwgl::Window.
+        // !!! Should be called only by bwgl::Window !!!
         void setCursorPos(float x, float y) {
             m_cursorX = x;
             m_cursorY = m_windowHeight - y;
         }
     private:
-        // Since GLFW constans for mouse buttons and keyboard keys don't overlap,
-        // you can use a single array to store press states
+        // GLFW constans for mouse buttons and keyboard keys don't overlap
         std::array<KeyState, GLFW_KEY_LAST + 1> keys;
 
         // Window Size
