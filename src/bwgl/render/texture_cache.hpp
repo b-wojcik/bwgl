@@ -53,7 +53,7 @@ public:
 			glGenerateMipmap(GL_TEXTURE_2D);
 		}
 		else {
-			std::cerr << "ERROR Texture::load() | Failed to load image data for:\n";
+			std::cerr << "ERROR bwgl::TextureCache::load() | Failed to load image data from:\n";
 			std::cerr << '"' << filepath << '"' << '\n';
 		}
 		stbi_image_free(data);
