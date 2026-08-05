@@ -52,6 +52,8 @@ add_executable(
     src/bwgl/core/window.hpp
     src/bwgl/core/input.hpp
     src/bwgl/render/shader_cache.hpp
+    src/bwgl/render/texture_cache.hpp
+    src/bwgl/render/test_mesh.hpp
 )
 
 target_compile_features(
