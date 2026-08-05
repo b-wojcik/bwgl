@@ -9,6 +9,10 @@
 #include "input.hpp"
 
 namespace bwgl {
+	// Current specification constants
+	static const unsigned int OPENGL_VERSION_MAJOR = 4;
+	static const unsigned int OPENGL_VERSION_MINOR = 4;
+
 	enum class FullscreenMode {
 		Native = 0,
 		Borderless = 1
@@ -47,8 +51,8 @@ namespace bwgl {
 			m_glfwInitialized = true;
 
 			// Set OpenGL version 4.4
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, bwgl::OPENGL_VERSION_MAJOR);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, bwgl::OPENGL_VERSION_MINOR);
 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 			
 
@@ -161,15 +165,9 @@ namespace bwgl {
 		}
 
 		// The FullscreenMode can only be updated when the window is in windowed mode.
-		// Returns true when the FullscreenMode changes successfully.  
-		bool setFullscreenMode(FullscreenMode mode) {
-			if (m_fullscreen || m_changingFullscreen) {
-				return false;
-			}
-
+		void setFullscreenMode(FullscreenMode mode) {
+			if (m_fullscreen || m_changingFullscreen) return;
 			m_fullscreenMode = mode;
-
-			return true;
 		}
 
 		FullscreenMode getFullscreenMode() const {
@@ -215,6 +213,20 @@ namespace bwgl {
 			glfwSetWindowPos(m_window, xpos, ypos);
 		}
 
+		// Changes the window state.
+		// Fails when GLFWwindow object has not been created.
+		void setTitle(const std::string& title) {
+			if (!m_window) return;
+			glfwSetWindowTitle(m_window, title.c_str());
+		}
+
+		// Changes the window state.
+		// Fails when GLFWwindow object has not been created.
+		const char* getTitle() const {
+			if (!m_window) return "";
+			return glfwGetWindowTitle(m_window);
+		}
+
 		WindowState getState() const {
 			return m_currentState;
 		}
@@ -242,9 +254,9 @@ namespace bwgl {
 
 		FullscreenMode m_fullscreenMode = FullscreenMode::Native;
 		bool m_changingFullscreen = false;
-		bool m_fullscreen = false;
-		bool m_resizable = true;
 		
+		bool m_fullscreen = false;
+		bool m_resizable = false;
 		bool m_vsync = false;
 
 		// GLFW handling

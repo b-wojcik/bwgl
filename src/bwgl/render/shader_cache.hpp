@@ -6,6 +6,8 @@
 #include <sstream>
 
 // Singleton class for loading, storing and using shader programs.
+// Warning: Manually calling glUseProgram(...) will likely break the ShaderCache.use() function! 
+// For optimization reasons, the last used shader program is remembered, as to minimize OpenGL state changes.
 class ShaderCache {
 public:
 	static ShaderCache& get() {
@@ -16,13 +18,19 @@ public:
 	// Links a shader program for specified vertex and fragment shaders.
 	// From then on, that shader program can be used.
 	void load(const char* name, const char* vertexFilePath, const char* fragmentFilePath) {
+		if (shaderPrograms.count(name)) {
+			std::cerr << "WARNING bwgl::ShaderCache::load() | Shader program already loaded:\n";
+			std::cerr << '"' << name << '"' << '\n';
+			return;
+		}
+
 		bool openFailed = false;
 
 		// Try to open the vertex shader file
 		std::ifstream vertexFile(vertexFilePath);
 		if (!vertexFile.is_open()) {
 			std::cerr << "ERROR bwgl::ShaderCache::load() | Failed to open vertex shader file:\n";
-			std::cerr << "	" << '"' << vertexFilePath << '"' << '\n';
+			std::cerr <<'"' << vertexFilePath << '"' << '\n';
 			openFailed = true;
 		}
 
@@ -30,7 +38,7 @@ public:
 		std::ifstream fragmentFile(fragmentFilePath);
 		if (!fragmentFile.is_open()) {
 			std::cerr << "ERROR bwgl::ShaderCache::load() | Failed to open fragment shader file:\n";
-			std::cerr << "	" << '"' << fragmentFilePath << '"' << '\n';
+			std::cerr << '"' << fragmentFilePath << '"' << '\n';
 			openFailed = true;
 		}
 
@@ -118,35 +126,43 @@ public:
 		glDeleteShader(fragmentShader);
 
 		// Add the shader program
-		shaders[name] = programID;
+		shaderPrograms[name] = programID;
 	}
 
 	// Tries to use a specified shader program, prints a warning if fails.
 	void use(const char* name) {
-		if (!shaders.count(name)) {
+		if (!shaderPrograms.count(name)) {
 			std::cerr << "WARNING bwgl::ShaderCache::use() | Shader not found:\n";
-			std::cerr << name << '\n';
+			std::cerr << '"' << name << '"' << '\n';
 			return;
 		}
 
-		glUseProgram(shaders[name]);
+		// Don't change OpenGL state, if it is not necessary
+		GLuint newProgram = shaderPrograms[name];
+		if (newProgram == lastUsedProgram) {
+			return;
+		}
+
+		lastUsedProgram = newProgram;
+		glUseProgram(newProgram);
 	}
 
 	// Makes OpenGL use the default shader program.
 	inline void disuse() {
 		glUseProgram(0);
+		lastUsedProgram = 0;
 	}
 
 	// Sets the value of a uniform variable for a specified shader program.
 	// If the shader program is not found, prints a warning.
 	void setBool(const char* name, const char* variableName, bool value) {
 		// Try to find the shader program id
-		if (!shaders.count(name)) {
+		if (!shaderPrograms.count(name)) {
 			std::cerr << "WARNING bwgl::ShaderCache::setBool() | Shader not found:\n";
 			std::cerr << name << '\n';
 			return;
 		}
-		GLuint programID = shaders[name];
+		GLuint programID = shaderPrograms[name];
 
 		// Upload the data
 		glProgramUniform1i(programID, glGetUniformLocation(programID, variableName), int(value));
@@ -156,12 +172,12 @@ public:
 	// If the shader program is not found, prints a warning.
 	void setInt(const char* name, const char* variableName, int value) {
 		// Try to find the shader program id
-		if (!shaders.count(name)) {
+		if (!shaderPrograms.count(name)) {
 			std::cerr << "WARNING bwgl::ShaderCache::setInt() | Shader not found:\n";
 			std::cerr << name << '\n';
 			return;
 		}
-		GLuint programID = shaders[name];
+		GLuint programID = shaderPrograms[name];
 
 		// Upload the data
 		glProgramUniform1i(programID, glGetUniformLocation(programID, variableName), value);
@@ -171,12 +187,12 @@ public:
 	// If the shader program is not found, prints a warning.
 	void setFloat(const char* name, const char* variableName, float value) {
 		// Try to find the shader program id
-		if (!shaders.count(name)) {
+		if (!shaderPrograms.count(name)) {
 			std::cerr << "WARNING bwgl::ShaderCache::setFloat() | Shader not found:\n";
 			std::cerr << name << '\n';
 			return;
 		}
-		GLuint programID = shaders[name];
+		GLuint programID = shaderPrograms[name];
 
 		// Upload the data
 		glProgramUniform1f(programID, glGetUniformLocation(programID, variableName), value);
@@ -186,12 +202,12 @@ public:
 	// If the shader program is not found, prints a warning.
 	void setVec2(const char* name, const char* variableName, const GLfloat* ptr) {
 		// Try to find the shader program id
-		if (!shaders.count(name)) {
+		if (!shaderPrograms.count(name)) {
 			std::cerr << "WARNING bwgl::ShaderCache::setVec2() | Shader not found:\n";
 			std::cerr << name << '\n';
 			return;
 		}
-		GLuint programID = shaders[name];
+		GLuint programID = shaderPrograms[name];
 
 		// Upload the data
 		glProgramUniform2fv(programID, glGetUniformLocation(programID, variableName), 1, ptr);
@@ -201,12 +217,12 @@ public:
 	// If the shader program is not found, prints a warning.
 	void setVec3(const char* name, const char* variableName, const GLfloat* ptr) {
 		// Try to find the shader program id
-		if (!shaders.count(name)) {
+		if (!shaderPrograms.count(name)) {
 			std::cerr << "WARNING bwgl::ShaderCache::setVec3() | Shader not found:\n";
 			std::cerr << name << '\n';
 			return;
 		}
-		GLuint programID = shaders[name];
+		GLuint programID = shaderPrograms[name];
 
 		// Upload the data
 		glProgramUniform3fv(programID, glGetUniformLocation(programID, variableName), 1, ptr);
@@ -216,12 +232,12 @@ public:
 	// If the shader program is not found, prints a warning.
 	void setVec4(const char* name, const char* variableName, const GLfloat* ptr) {
 		// Try to find the shader program id
-		if (!shaders.count(name)) {
+		if (!shaderPrograms.count(name)) {
 			std::cerr << "WARNING bwgl::ShaderCache::setVec4() | Shader not found:\n";
 			std::cerr << name << '\n';
 			return;
 		}
-		GLuint programID = shaders[name];
+		GLuint programID = shaderPrograms[name];
 
 		// Upload the data
 		glProgramUniform4fv(programID, glGetUniformLocation(programID, variableName), 1, ptr);
@@ -231,12 +247,12 @@ public:
 	// If the shader program is not found, prints a warning.
 	void setMat3(const char* name, const char* variableName, const GLfloat* ptr) {
 		// Try to find the shader program id
-		if (!shaders.count(name)) {
+		if (!shaderPrograms.count(name)) {
 			std::cerr << "WARNING bwgl::ShaderCache::setMat3() | Shader not found:\n";
 			std::cerr << name << '\n';
 			return;
 		}
-		GLuint programID = shaders[name];
+		GLuint programID = shaderPrograms[name];
 
 		// Upload the data
 		glProgramUniformMatrix3fv(
@@ -252,12 +268,12 @@ public:
 	// If the shader program is not found, prints a warning.
 	void setMat4(const char* name, const char* variableName, const GLfloat* ptr) {
 		// Try to find the shader program id
-		if (!shaders.count(name)) {
+		if (!shaderPrograms.count(name)) {
 			std::cerr << "WARNING bwgl::ShaderCache::setMat4() | Shader not found:\n";
 			std::cerr << name << '\n';
 			return;
 		}
-		GLuint programID = shaders[name];
+		GLuint programID = shaderPrograms[name];
 
 		// Upload the data
 		glProgramUniformMatrix4fv(
@@ -273,8 +289,10 @@ public:
 	ShaderCache(const ShaderCache&) = delete;
 	ShaderCache(ShaderCache&&) = delete;
 private:
-	// Maps shader names to their OpenGL IDs 
-	std::unordered_map<std::string, GLuint> shaders;
+	// Maps shader program names to their OpenGL IDs 
+	std::unordered_map<std::string, GLuint> shaderPrograms;
+
+	GLuint lastUsedProgram = 0;
 
 	ShaderCache() = default;
 	~ShaderCache() = default;
