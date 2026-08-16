@@ -1,1 +1,1 @@
-BWGL is a small **header only** C++ rendering framework built on OpenGL 4.4, that abstracts common tasks like window and input handling, shader and texture caching, asset loading.
+BWGL is a small, **header only** C++ rendering framework built on **OpenGL 4.4**, which provides reusable abstractions for common tasks such as window and input handling, shader and texture caching, asset loading, and mesh generation. It is designed to provide the foundational systems needed to get an OpenGL project up and running without having to build them from scratch.
