@@ -179,7 +179,7 @@ namespace bwgl {
 		}
 
 		// Creates a std140 global shader uniform buffer for a binding.
-		void createGlobalUniform(unsigned int binding, unsigned int bufferSize, bool dynamic) {
+		void createGlobalUniform(unsigned int binding, unsigned int bufferSize, bool dynamicDraw) {
 			if (binding > 3) {
 				BWGL_ERROR(
 					"bwgl::ShaderCache::createGlobalUniform(): binding out of bounds [0;3]:\n",
@@ -198,7 +198,7 @@ namespace bwgl {
 				GL_UNIFORM_BUFFER, 
 				bufferSize,
 				(void*)0,
-				dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW
+				dynamicDraw ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW
 			);
 			glBindBufferBase(GL_UNIFORM_BUFFER, binding, UBO);
 
@@ -207,7 +207,7 @@ namespace bwgl {
 		}
 
 		// Updates a global shader uniform buffer for a binding.
-		void updateGlobalUniform(unsigned int binding, unsigned int bufferSize, const void* dataPtr) {
+		void updateGlobalUniform(unsigned int binding, unsigned int bufferSize, const void* data) {
 			if (binding > 3) {
 				BWGL_ERROR(
 					"bwgl::ShaderCache::updateGlobalUniform(): binding out of bounds [0;3]:\n",
@@ -229,7 +229,7 @@ namespace bwgl {
 
 			// Update buffer data
 			glBindBuffer(GL_UNIFORM_BUFFER, UBOs[binding]);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, bufferSize, dataPtr);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, bufferSize, data);
 		}
 
 		// Sets the value of a uniform variable.
