@@ -13,7 +13,7 @@ namespace bwgl {
 
 	inline TextureCache& texture_cache = TextureCache::get();
 
-	// Returns the elapsed time since the window was created.
+	// Returns the elapsed time since window was created.
 	inline float time() {
 		return window.getTime();
 	}

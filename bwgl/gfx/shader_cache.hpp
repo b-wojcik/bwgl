@@ -5,6 +5,7 @@
 #include <sstream>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <array>
 
 #include "../core/debug.hpp"
 
@@ -177,6 +178,60 @@ namespace bwgl {
 			m_isProgramValid = false;
 		}
 
+		// Creates a std140 global shader uniform buffer for a binding.
+		void createGlobalUniform(unsigned int binding, unsigned int bufferSize, bool dynamic) {
+			if (binding > 3) {
+				BWGL_ERROR(
+					"bwgl::ShaderCache::createGlobalUniform(): binding out of bounds [0;3]:\n",
+					"=> ",
+					binding
+				);
+				return;
+			}
+			
+			// Create buffer
+			GLuint UBO;
+			glGenBuffers(1, &UBO);
+			
+			glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+			glBufferData(
+				GL_UNIFORM_BUFFER, 
+				bufferSize,
+				(void*)0,
+				dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW
+			);
+			glBindBufferBase(GL_UNIFORM_BUFFER, binding, UBO);
+
+			// Store the UBO
+			UBOs[binding] = UBO;
+		}
+
+		// Updates a global shader uniform buffer for a binding.
+		void updateGlobalUniform(unsigned int binding, unsigned int bufferSize, const void* dataPtr) {
+			if (binding > 3) {
+				BWGL_ERROR(
+					"bwgl::ShaderCache::updateGlobalUniform(): binding out of bounds [0;3]:\n",
+					"=> ",
+					binding
+				);
+				return;
+			}
+
+			// Fail when buffer was not created
+			if (UBOs[binding] == UBO_INVALID) {
+				BWGL_ERROR(
+					"bwgl::ShaderCache::updateGlobalUniform(): buffer not created for binding:\n",
+					"=> ",
+					binding
+				);
+				return;
+			}
+
+			// Update buffer data
+			glBindBuffer(GL_UNIFORM_BUFFER, UBOs[binding]);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, bufferSize, dataPtr);
+		}
+
 		// Sets the value of a uniform variable.
 		void setBool(ShaderProgram program, const char* name, bool value) {
 			glProgramUniform1i(
@@ -315,7 +370,13 @@ namespace bwgl {
 		bool m_isProgramValid = false;
 		ShaderProgram m_lastProgram = 0;
 
-		ShaderCache() = default;
+		// Uniform Buffer Objects used for global uniforms
+		const GLuint UBO_INVALID = 0x3f3f3f3f;
+		std::array<GLuint, 4> UBOs;
+
+		ShaderCache() {
+			UBOs.fill(UBO_INVALID);
+		}
+
 		~ShaderCache() = default;
-	};
-}
+	};}

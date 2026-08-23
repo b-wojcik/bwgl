@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <glad/gl.h>
 
 #include "vertex.hpp"
 
@@ -142,7 +143,6 @@ namespace bwgl {
 
 			glBindVertexArray(VAO);
 			glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-			glBindVertexArray(0);
 		}
 	private:
 		bool created = false;

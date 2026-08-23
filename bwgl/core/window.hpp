@@ -93,11 +93,6 @@ namespace bwgl {
 				);
 			}
 
-			// Enable culling
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-			glFrontFace(GL_CCW);
-
 			// Enable depth test
 			glEnable(GL_DEPTH_TEST);
 
@@ -115,6 +110,8 @@ namespace bwgl {
 
 			Input::get().setWindowDimensions(m_currentState.width, m_currentState.height);
 			createCallbacks();
+
+			glfwPollEvents();
 		}
 
 		// Polls window events, clears buffers.
@@ -259,7 +256,7 @@ namespace bwgl {
 			return float(glfwGetTime());
 		}
 
-		WindowState getState() const {
+		const WindowState& getState() const {
 			return m_currentState;
 		}
 

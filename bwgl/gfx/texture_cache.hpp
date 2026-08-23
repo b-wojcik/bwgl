@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "../third_party/stb_image.h"
 
@@ -64,33 +66,59 @@ namespace bwgl {
 			return texture;
 		}
 
-		// Tries to use the texture.
-		void use(Texture texture) {
-			if (texture == m_lastTexture && m_isTextureValid) {
+		// Tries to use the texture for specified texture unit [0;31].
+		void use(Texture texture, unsigned int unit) {
+			if (unit > 31) {
+				BWGL_ERROR(
+					"bwgl::TextureCache::use(): unit out of bounds [0;31]:\n",
+					"=> ",
+					unit
+				);
 				return;
 			}
+
+			// Avoid unnecessary OpenGL state changes
+			if (texture == m_lastTexture[unit] && m_isTextureValid[unit]) {
+				return;
+			}
+
+			// GL_TEXTURE0<->GL_TEXTURE31 range is continous
+			glActiveTexture(GL_TEXTURE0 + unit);
 
 			glBindTexture(GL_TEXTURE_2D, texture);
 
 			// Save the new state
-			m_isTextureValid = true;
-			m_lastTexture = texture;
+			m_lastTexture[unit] = texture;
+			m_isTextureValid[unit] = true;
 		}
 
-		// Invalidates the cached texture. 
-		// Should be used when glBindTexture() is called externally.
-		void invalidate() {
-			m_isTextureValid = false;
+		// Invalidates the cached texture for specified texture unit [0;31]. 
+		// Should be used when glBindTexture() is called externally for texture unit.
+		void invalidate(unsigned int unit) {
+			if (unit > 31) {
+				BWGL_ERROR(
+					"bwgl::TextureCache::invalidate(): unit out of bounds [0;31]:\n",
+					"=> ",
+					unit
+				);
+				return;
+			}
+			
+			m_isTextureValid[unit] = false;
 		}
 
 		// Delete copy and move constructors
 		TextureCache(const TextureCache&) = delete;
 		TextureCache(TextureCache&&) = delete;
 	private:
-		bool m_isTextureValid = false;
-		Texture m_lastTexture = 0;
+		std::array<bool, 32> m_isTextureValid;
+		std::array<Texture, 32> m_lastTexture;
 
-		TextureCache() = default;
+		TextureCache() {
+			m_isTextureValid.fill(false);
+			m_lastTexture.fill(0);
+		}
+
 		~TextureCache() = default;
 	};
 }

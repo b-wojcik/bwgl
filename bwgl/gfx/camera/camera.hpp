@@ -70,7 +70,5 @@ namespace bwgl {
 				up
 			);
 		}
-
-		Camera() = default;
 	};
 }
