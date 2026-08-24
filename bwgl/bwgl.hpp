@@ -3,6 +3,8 @@
 #include "core/window.hpp"
 #include "gfx/shader_cache.hpp"
 #include "gfx/texture_cache.hpp"
+#include "gfx/camera/fp_camera.hpp"
+#include "gfx/mesh/mesh.hpp"
 
 namespace bwgl {
 	inline Window& window = Window::get();

@@ -65,6 +65,7 @@ namespace bwgl {
 			// Load vertex shader source code
 			std::stringstream vertexShaderBuffer;
 			vertexShaderBuffer << vertexFile.rdbuf();
+			vertexFile.close();
 
 			std::string vertexSource = vertexShaderBuffer.str();
 			const char* vertexSourcePtr = vertexSource.c_str();
@@ -94,6 +95,7 @@ namespace bwgl {
 			// Load fragment shader source code
 			std::stringstream fragmentShaderBuffer;
 			fragmentShaderBuffer << fragmentFile.rdbuf();
+			fragmentFile.close();
 
 			std::string fragmentSource = fragmentShaderBuffer.str();
 			const char* fragmentSourcePtr = fragmentSource.c_str();

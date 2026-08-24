@@ -66,11 +66,11 @@ namespace bwgl {
 			return texture;
 		}
 
-		// Tries to use the texture for specified texture unit [0;31].
+		// Tries to use the texture for specified texture unit [0;15].
 		void use(Texture texture, unsigned int unit) {
-			if (unit > 31) {
+			if (unit > 15) {
 				BWGL_ERROR(
-					"bwgl::TextureCache::use(): unit out of bounds [0;31]:\n",
+					"bwgl::TextureCache::use(): unit out of bounds [0;15]:\n",
 					"=> ",
 					unit
 				);
@@ -82,7 +82,7 @@ namespace bwgl {
 				return;
 			}
 
-			// GL_TEXTURE0<->GL_TEXTURE31 range is continous
+			// GL_TEXTURE0<->GL_TEXTURE15 range is continous
 			glActiveTexture(GL_TEXTURE0 + unit);
 
 			glBindTexture(GL_TEXTURE_2D, texture);
@@ -92,12 +92,12 @@ namespace bwgl {
 			m_isTextureValid[unit] = true;
 		}
 
-		// Invalidates the cached texture for specified texture unit [0;31]. 
+		// Invalidates the cached texture for specified texture unit [0;15]. 
 		// Should be used when glBindTexture() is called externally for texture unit.
 		void invalidate(unsigned int unit) {
-			if (unit > 31) {
+			if (unit > 15) {
 				BWGL_ERROR(
-					"bwgl::TextureCache::invalidate(): unit out of bounds [0;31]:\n",
+					"bwgl::TextureCache::invalidate(): unit out of bounds [0;15]:\n",
 					"=> ",
 					unit
 				);
@@ -111,8 +111,8 @@ namespace bwgl {
 		TextureCache(const TextureCache&) = delete;
 		TextureCache(TextureCache&&) = delete;
 	private:
-		std::array<bool, 32> m_isTextureValid;
-		std::array<Texture, 32> m_lastTexture;
+		std::array<bool, 16> m_isTextureValid;
+		std::array<Texture, 16> m_lastTexture;
 
 		TextureCache() {
 			m_isTextureValid.fill(false);

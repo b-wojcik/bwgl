@@ -14,8 +14,9 @@ namespace bwgl {
 			FPCamera::sensitivity = sensitivity / 10.0f;
 			FPCamera::speed = speed;
 			
-			camera.createPerspective(fov, 0.1f, 100.0f);
-			window.hideCursor();
+			const auto& state = Window::get().getState();
+			camera.createPerspective(fov, 0.1f, 100.0f, float(state.width) / state.height);
+			Window::get().hideCursor();
 
 			created = true;
 		}
@@ -26,7 +27,7 @@ namespace bwgl {
 			if (!created) {
 				if (!warningShown) {
 					BWGL_WARNING(
-						"bwgl::FPCamera::update(): camera was never been created"
+						"bwgl::FPCamera::update(): camera not created"
 					);
 					warningShown = true;
 				}
@@ -34,8 +35,8 @@ namespace bwgl {
 				return;
 			}
 
-			float xpos = input.cursorX();
-			float ypos = input.cursorY();
+			float xpos = Input::get().cursorX();
+			float ypos = Input::get().cursorY();
 
 			if (firstMouse) {
 				lastX = xpos;
@@ -82,24 +83,24 @@ namespace bwgl {
 			);
 
 			// Handle movement
-			if (input.isKeyDown(KeyCode::W)) {
+			if (Input::get().isKeyDown(KeyCode::W)) {
 				camera.position += camera.direction * speed * deltaTime;
 			}
-			if (input.isKeyDown(KeyCode::S)) {
+			if (Input::get().isKeyDown(KeyCode::S)) {
 				camera.position -= camera.direction * speed * deltaTime;
 			}
-			if (input.isKeyDown(KeyCode::A)) {
+			if (Input::get().isKeyDown(KeyCode::A)) {
 				camera.position -= camera.right * speed * deltaTime;
 			}
-			if (input.isKeyDown(KeyCode::D)) {
+			if (Input::get().isKeyDown(KeyCode::D)) {
 				camera.position += camera.right * speed * deltaTime;
 			}
 
 			// Up / down movement 
-			if (input.isKeyDown(KeyCode::LeftShift)) {
+			if (Input::get().isKeyDown(KeyCode::LeftShift)) {
 				camera.position.y -= speed * deltaTime;
 			}
-			if (input.isKeyDown(KeyCode::Space)) {
+			if (Input::get().isKeyDown(KeyCode::Space)) {
 				camera.position.y += speed * deltaTime;
 			}
 
@@ -118,7 +119,7 @@ namespace bwgl {
 			return camera.projection;
 		}
 
-		FPCamera() = default;
+		FPCamera() {}
 
 		// Delete copy and move constructors
 		FPCamera(const FPCamera&) = delete;

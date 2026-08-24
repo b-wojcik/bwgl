@@ -95,6 +95,7 @@ namespace bwgl {
 
 			// Enable depth test
 			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(GL_LESS);
 
 			// Create an appropriate viewport
 			int framebufferWidth;

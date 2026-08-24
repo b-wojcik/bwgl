@@ -33,13 +33,6 @@ namespace bwgl {
 			projection = glm::perspective(glm::radians(fov), aspectRatio, near, far);
 		}
 
-		// Creates a perspective camera looking in the -Z direction.
-		// The aspect ratio is set by default.
-		void createPerspective(float fov, float near, float far) {
-			const auto& windowState = bwgl::window.getState();
-			createPerspective(fov, near, far, float(windowState.width) / windowState.height);
-		}
-
 		// Creates an orthographic camera looking in the -Z direction.
 		void createOrthographic(
 			float left, 
