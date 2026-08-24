@@ -115,7 +115,7 @@ namespace bwgl {
 			glfwPollEvents();
 		}
 
-		// Polls window events, clears buffers.
+		// Polls window events, clears color and depth buffers.
 		// Does nothing if the window has not been created.
 		void beginFrame() {
 			if (!m_window) return;
