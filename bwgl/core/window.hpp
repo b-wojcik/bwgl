@@ -39,7 +39,6 @@ namespace bwgl {
 				BWGL_WARNING(
 					"bwgl::Window::create(): window has been created already"
 				);
-
 				return;
 			}
 
@@ -56,7 +55,7 @@ namespace bwgl {
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-			// Create GLFW window object
+			// Create GLFW window
 			m_window = glfwCreateWindow(
 				width,
 				height,
@@ -65,7 +64,6 @@ namespace bwgl {
 				NULL
 			);
 
-			// Create the GLFWwindow object
 			if (!m_window) {
 				BWGL_ERROR(
 					"bwgl::Window::create(): failed to create an OpenGL 4.4 GLFW window"
@@ -82,7 +80,6 @@ namespace bwgl {
 			m_preFullscreenState.width = m_currentState.width;
 			m_preFullscreenState.height = m_currentState.height;
 
-			// Render settings
 			glfwSwapInterval(m_vsync ? 1 : 0);
 			setResizable(resizable);
 
@@ -109,6 +106,7 @@ namespace bwgl {
 
 			glViewport(0, 0, framebufferWidth, framebufferHeight);
 
+			// Setup event handling
 			Input::get().setWindowDimensions(m_currentState.width, m_currentState.height);
 			createCallbacks();
 
