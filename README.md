@@ -20,3 +20,4 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(bwgl)
 ```
+## Known limitations
