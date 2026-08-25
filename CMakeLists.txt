@@ -45,53 +45,31 @@ FetchContent_Declare(
 	glm
 	GIT_REPOSITORY https://github.com/g-truc/glm.git
 	GIT_TAG 0af55ccecd98d4e5a8d1fad7de25ba429d60e863 #refs/tags/1.0.1
+	GIT_SHALLOW TRUE
 )
 
 FetchContent_MakeAvailable(glm)
 
 # BWGL
-add_library(
-    bwgl
-    STATIC
-
-    bwgl/bwgl.hpp
-
-    # Core
-    bwgl/core/window.hpp
-    bwgl/core/input.hpp
-    bwgl/core/debug.hpp
-
-    # Cache
-    bwgl/gfx/shader_cache.hpp
-    bwgl/gfx/texture_cache.hpp
-
-    # Camera
-    bwgl/gfx/camera/camera.hpp
-    bwgl/gfx/camera/fp_camera.hpp
-
-    # Mesh
-    bwgl/gfx/mesh/vertex.hpp
-    bwgl/gfx/mesh/mesh.hpp
-)
-
+add_library(bwgl INTERFACE)
 add_library(bwgl::bwgl ALIAS bwgl)
 
 target_compile_features(
     bwgl
-    PUBLIC
+    INTERFACE
         cxx_std_20
 )
 
 target_include_directories(
     bwgl
-    PUBLIC
+    INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(
     bwgl
-    PUBLIC
+    INTERFACE
         glfw
         glad_gl_core_44
-        glm
+        glm::glm
 )
