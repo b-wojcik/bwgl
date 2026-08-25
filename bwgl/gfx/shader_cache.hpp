@@ -162,6 +162,93 @@ namespace bwgl {
 			return program;
 		}
 
+		// Loads and links a shader program from vertex and fragment shader source code.
+		// Returns its handle on success.
+		[[nodiscard]]
+		ShaderProgram loadFromSource(const char* vertexSource, const char* fragmentSource) {
+			// Used for error checking
+			int success;
+			char infoLog[512];
+			bool compilationFailed = false;
+
+			// Compile the vertex shader
+			GLuint vertexShader;
+			vertexShader = glCreateShader(GL_VERTEX_SHADER);
+			glShaderSource(vertexShader, 1, &vertexSource, NULL);
+			glCompileShader(vertexShader);
+
+			// Check for errors
+			glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+			if (!success) {
+				glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+
+				BWGL_WARNING(
+					"bwgl::ShaderCache::loadFromSource(): vertex shader failed to compile:\n",
+					"=> ",
+					vertexSource,
+					'\n',
+					infoLog
+				);
+
+				compilationFailed = true;
+			}
+
+			// Compile the fragment shader
+			GLuint fragmentShader;
+			fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+			glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
+			glCompileShader(fragmentShader);
+
+			// Check for errors
+			glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+			if (!success) {
+				glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+
+				BWGL_WARNING(
+					"bwgl::ShaderCache::loadFromSource(): fragment shader failed to compile:\n",
+					"=> ",
+					fragmentSource,
+					'\n',
+					infoLog
+				);
+
+				compilationFailed = true;
+			}
+
+			if (compilationFailed) {
+				BWGL_ERROR(
+					"bwgl::ShaderCache::loadFromSource(): failed to load a shader program\n"
+				);
+
+				return 0;
+			}
+
+			// Link the shader program
+			ShaderProgram program = glCreateProgram();
+			glAttachShader(program, vertexShader);
+			glAttachShader(program, fragmentShader);
+			glLinkProgram(program);
+
+			// Cleanup
+			glDeleteShader(vertexShader);
+			glDeleteShader(fragmentShader);
+
+			// Check for errors
+			glGetProgramiv(program, GL_LINK_STATUS, &success);
+			if (!success) {
+				glGetProgramInfoLog(program, 512, NULL, infoLog);
+
+				BWGL_ERROR(
+					"bwgl::ShaderCache::loadFromSource(): shader program failed to link:\n",
+					infoLog
+				);
+
+				return 0;
+			}
+
+			return program;
+		}
+
 		// Tries to use the program.
 		void use(ShaderProgram program) {
 			if (program == m_lastProgram && m_isProgramValid) {
