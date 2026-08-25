@@ -21,7 +21,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(bwgl)
 ```
 ## Known limitations
+- Window has to be created before any other *BWGL* usage
 - Only one window can be created
-- Only obj file support for loading meshes from disk
+- Only obj file support for loading meshes
 - The obj file has to contain position, normal and uv data
-- No way to embed assets like textures into source code
+- Currently no way to embed assets like textures into source code
