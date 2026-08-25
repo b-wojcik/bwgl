@@ -19,6 +19,24 @@ namespace bwgl {
 			return instance;
 		}
 
+		// Tries to use the program.
+		void use(ShaderProgram program) {
+			if (program == m_lastProgram && m_isProgramValid) {
+				return;
+			}
+
+			glUseProgram(program);
+
+			m_isProgramValid = true;
+			m_lastProgram = program;
+		}
+
+		// Invalidates the cached program. 
+		// Should be used when glUseProgram() is called externally.
+		void invalidate() {
+			m_isProgramValid = false;
+		}
+
 		// Loads and links a shader program from vertex and fragment shaders.
 		// Returns its handle on success.
 		[[nodiscard]]
@@ -247,24 +265,6 @@ namespace bwgl {
 			}
 
 			return program;
-		}
-
-		// Tries to use the program.
-		void use(ShaderProgram program) {
-			if (program == m_lastProgram && m_isProgramValid) {
-				return;
-			}
-
-			glUseProgram(program);
-
-			m_isProgramValid = true;
-			m_lastProgram = program;
-		}
-
-		// Invalidates the cached program. 
-		// Should be used when glUseProgram() is called externally.
-		void invalidate() {
-			m_isProgramValid = false;
 		}
 
 		// Creates a std140 global shader uniform buffer for a binding.
