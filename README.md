@@ -21,3 +21,5 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(bwgl)
 ```
 ## Known limitations
+#### Only one window can be created.
+#### 
