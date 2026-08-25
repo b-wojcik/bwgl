@@ -17,7 +17,7 @@ namespace bwgl {
 			return instance;
 		}
 
-		// Loads the texture from a file, returns its handle on success.
+		// Loads the texture from a file and returns its handle on success.
 		[[nodiscard]]
 		Texture load(const char* filepath) {
 			Texture texture;
