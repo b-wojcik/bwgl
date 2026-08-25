@@ -3,7 +3,7 @@ BWGL is a small, **header only** C++ rendering framework built on **OpenGL 4.4**
 It is designed to provide the foundational systems needed to get an OpenGL project up and running without having to build them from scratch.
 
 ## CMake using FetchContent
-You can add bwgl to your CMake project to be built together.
+You can add BWGL to your CMake project to be built together.
 
 Add this code to the `CMakeLists.txt` file:
 ```cmake_code
