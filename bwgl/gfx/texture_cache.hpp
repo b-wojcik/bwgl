@@ -17,6 +17,47 @@ namespace bwgl {
 			return instance;
 		}
 
+		// Tries to use the texture for specified texture unit [0;15].
+		void use(Texture texture, unsigned int unit) {
+			if (unit > 15) {
+				BWGL_ERROR(
+					"bwgl::TextureCache::use(): unit out of bounds [0;15]:\n",
+					"=> ",
+					unit
+				);
+				return;
+			}
+
+			// Avoid unnecessary OpenGL state changes
+			if (texture == m_lastTexture[unit] && m_isTextureValid[unit]) {
+				return;
+			}
+
+			// GL_TEXTURE0<->GL_TEXTURE15 range is continous
+			glActiveTexture(GL_TEXTURE0 + unit);
+
+			glBindTexture(GL_TEXTURE_2D, texture);
+
+			// Save the new state
+			m_lastTexture[unit] = texture;
+			m_isTextureValid[unit] = true;
+		}
+
+		// Invalidates the cached texture for specified texture unit [0;15]. 
+		// Should be used when glBindTexture() is called externally for texture unit.
+		void invalidate(unsigned int unit) {
+			if (unit > 15) {
+				BWGL_ERROR(
+					"bwgl::TextureCache::invalidate(): unit out of bounds [0;15]:\n",
+					"=> ",
+					unit
+				);
+				return;
+			}
+			
+			m_isTextureValid[unit] = false;
+		}
+
 		// Loads the texture from a file and returns its handle on success.
 		[[nodiscard]]
 		Texture load(const char* filepath) {
@@ -64,47 +105,6 @@ namespace bwgl {
 			stbi_image_free(data);
 
 			return texture;
-		}
-
-		// Tries to use the texture for specified texture unit [0;15].
-		void use(Texture texture, unsigned int unit) {
-			if (unit > 15) {
-				BWGL_ERROR(
-					"bwgl::TextureCache::use(): unit out of bounds [0;15]:\n",
-					"=> ",
-					unit
-				);
-				return;
-			}
-
-			// Avoid unnecessary OpenGL state changes
-			if (texture == m_lastTexture[unit] && m_isTextureValid[unit]) {
-				return;
-			}
-
-			// GL_TEXTURE0<->GL_TEXTURE15 range is continous
-			glActiveTexture(GL_TEXTURE0 + unit);
-
-			glBindTexture(GL_TEXTURE_2D, texture);
-
-			// Save the new state
-			m_lastTexture[unit] = texture;
-			m_isTextureValid[unit] = true;
-		}
-
-		// Invalidates the cached texture for specified texture unit [0;15]. 
-		// Should be used when glBindTexture() is called externally for texture unit.
-		void invalidate(unsigned int unit) {
-			if (unit > 15) {
-				BWGL_ERROR(
-					"bwgl::TextureCache::invalidate(): unit out of bounds [0;15]:\n",
-					"=> ",
-					unit
-				);
-				return;
-			}
-			
-			m_isTextureValid[unit] = false;
 		}
 
 		// Delete copy and move constructors
