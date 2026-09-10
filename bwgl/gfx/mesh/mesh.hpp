@@ -264,6 +264,10 @@ namespace bwgl {
 			}
 			file.close();
 		}
+
+		GLuint getVAO() const {
+			return VAO;
+		}
 	private:
 		bool created = false;
 		bool warningShown = false;
