@@ -15,7 +15,7 @@ namespace bwgl {
 			FPCamera::speed = speed;
 			
 			const auto& state = Window::get().getState();
-			camera.createPerspective(fov, 0.1f, 100.0f, float(state.width) / state.height);
+			camera.createPerspective(fov, 0.1f, 500.0f, float(state.width) / state.height);
 			Window::get().hideCursor();
 
 			created = true;
