@@ -1,6 +1,5 @@
 *BWGL* is a small, header only C++ rendering framework built on **OpenGL** 4.4, which provides abstractions for tasks such as window handling, shader and texture caching, camera system and model loading.
-<br/> <br/>
-
+<br/>
 ## CMake using FetchContent
 You can add *BWGL* to your CMake project to be built together.
 
