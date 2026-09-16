@@ -81,15 +81,15 @@ namespace bwgl {
 			// Check if data was loaded correctly
 			if (data) {
 				// Make sure that the texture color data is interpreted correctly
-				GLenum format = GL_RGB;
+				GLenum format = GL_SRGB;
 				if (nrChannels == 1) {
 					format = GL_RED;
 				}
 				else if (nrChannels == 3) {
-					format = GL_RGB;
+					format = GL_SRGB;
 				}
 				else if (nrChannels == 4) {
-					format = GL_RGBA;
+					format = GL_SRGBA;
 				}
 
 				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
