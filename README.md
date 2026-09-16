@@ -21,6 +21,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(bwgl)
 ```
 ## Known limitations
+- No documentation
 - Window has to be created before any other *BWGL* usage
 - Only one window can be created
 - Only obj file support for loading meshes
