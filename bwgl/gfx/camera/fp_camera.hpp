@@ -111,6 +111,10 @@ namespace bwgl {
 			return camera.position;
 		}
 
+		const glm::vec3& getDirection() const {
+			return camera.direction;
+		}
+
 		const glm::mat4& getView() const {
 			return camera.view;
 		}
