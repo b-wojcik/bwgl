@@ -81,18 +81,23 @@ namespace bwgl {
 			// Check if data was loaded correctly
 			if (data) {
 				// Make sure that the texture color data is interpreted correctly
-				GLenum format = GL_SRGB;
+				GLenum internalFormat;
+				GLenum dataFormat;
+
 				if (nrChannels == 1) {
-					format = GL_RED;
+					internalFormat = GL_RED;
+					dataFormat = GL_RED;
 				}
 				else if (nrChannels == 3) {
-					format = GL_SRGB;
+					internalFormat = GL_SRGB;
+					dataFormat = GL_RGB;
 				}
 				else if (nrChannels == 4) {
-					format = GL_SRGBA;
+					internalFormat = GL_SRGB_ALPHA;
+					dataFormat = GL_RGBA;
 				}
 
-				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
 				glGenerateMipmap(GL_TEXTURE_2D);
 			}
 			else {
